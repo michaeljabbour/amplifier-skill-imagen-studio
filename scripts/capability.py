@@ -268,6 +268,11 @@ def build(data):
             + E("\n".join(native))
             + "</code></pre><p>These commands install the execution backend. The portable method is a separate surface.</p></details>"
         )
+    install_note = (
+        "Keep the complete skill folder together, including its references and license. The host applies the method in your context; the skill does not start a background service."
+        if folder
+        else "Use the native package and command interface described in the installation guide. This capability does not require a portable skill."
+    )
     evidence = E(
         data.get(
             "evidence_summary",
@@ -323,7 +328,9 @@ def build(data):
         + """</ul></section><section id="install"><p class="eyebrow">Choose the surface you need</p><h2>Make it yours.</h2>"""
         + download
         + install
-        + """<p>Keep the complete skill folder together, including its references and license. The host applies the method in your context; the skill does not start a background service.</p><p>"""
+        + "<p>"
+        + install_note
+        + "</p><p>"
         + doc_links
         + """</p></section><section id="evidence"><p class="eyebrow">Proof before a claim</p><h2>What has been checked?</h2><p>"""
         + evidence
