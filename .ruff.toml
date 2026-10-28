@@ -1,0 +1,11 @@
+extend = "modules/tool-imagen/pyproject.toml"
+
+[lint.per-file-ignores]
+# Long literal HTML in the shared stdlib builder is intentionally generated.
+"scripts/capability.py" = ["E501", "UP017"]
+# Retain the byte-hashed July apparatus; current import sorting is not a protocol change.
+"evals/behavioral_harness.py" = ["I001"]
+
+[format]
+# This is retained byte-hashed measurement apparatus, not the editable method.
+exclude = ["evals/behavioral_harness.py"]

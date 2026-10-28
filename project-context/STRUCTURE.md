@@ -24,3 +24,7 @@ behavioral expectations in `evals/`.
 `project-context/WAYSOFWORKING.md` records repository-specific verification and
 failure recovery steps; keep the final command set there when release checks
 change.
+
+## Portable consolidation (2026-10-28)
+
+`skills/imagen-studio/` owns the canonical method, generated references, license, and local ASCII converter. `docs/source-methods/`, native `context/`, and `schemas/` are canonical mirror sources. `scripts/sync_skill.py --check` enforces drift; `scripts/capability.py` owns static site/install packaging; `scripts/local_runtime.py` emits ignored machine-local YAML. `scripts/check_external_contract.py` accepts an explicit independent executable and checks initialize/discovery only.

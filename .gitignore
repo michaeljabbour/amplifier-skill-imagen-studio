@@ -33,3 +33,9 @@ dist/
 # Logs
 logs/
 *.log
+
+# Local capability release output
+_site/
+.capability-check/
+.venv-capability/
+__pycache__/

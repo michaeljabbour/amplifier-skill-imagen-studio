@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-28 — local portable consolidation
+
+Added the Imagen Studio canonical entry, generated rich reference mirrors with a hash gate, independent method install, family site metadata, and explicit native ownership/evidence boundaries. Native history and assets remain. No remote publication or paid work.
+
 ## 2.0.0 — 2026-07-13
 
 ### Added
@@ -45,3 +49,5 @@
 - Guidance to retry/rephrase blocked requests or remove watermarks.
 - Documentation that described only six tools or an unpublished v1.2.0 tag.
 - The unsupported direct-provider adapter and implicit sibling-checkout lookup.
+
+Actual local checks and their limits are recorded in `docs/VALIDATION.md` and `docs/evaluations/2026-10-28/consolidation.json`. No effectiveness or new deployment is inferred.
