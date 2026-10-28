@@ -74,3 +74,7 @@ rule to prove the grader rejects violations.
 grading that prose would be circular. The executable reference policy provides
 reproducible release evidence without pretending to prove stochastic-model
 compliance or calling paid image providers.
+
+## 2026-10-28 — Public explanation and onboarding
+
+The released method is introduced through task-specific benefits, a labeled fictional output and a copyable first request. Complete clone and install commands make the documented route usable from outside the maintainer checkout. Method content, native engines and dated evaluations are unchanged.

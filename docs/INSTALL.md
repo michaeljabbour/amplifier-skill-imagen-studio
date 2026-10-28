@@ -1,4 +1,25 @@
-# Install the method
+# Install Imagen Studio
+
+## Portable method
+
+Requires Git and Python 3.11+. From a terminal:
+
+```sh
+git clone https://github.com/michaeljabbour/amplifier-skill-imagen-studio.git
+cd amplifier-skill-imagen-studio
+python3 scripts/capability.py doctor
+python3 scripts/capability.py install --dest ~/.agents/skills
+```
+
+The destination is the parent of the `imagen-studio` folder. Select your host’s supported skills location. Refresh skill discovery, or point your agent at the complete installed folder and ask it to read `SKILL.md`.
+
+Try this first:
+
+```text
+Use Imagen Studio in Guided mode to prepare a fictional product-card illustration. It needs a 4:3 composition, room for a heading and no text inside the image. Draft the brief and acceptance checks first; show the provider and cost before any generation.
+```
+
+## Install behavior and optional execution
 
 Use `python3 scripts/capability.py doctor`, then `python3 scripts/capability.py install --dest <skills-parent>`. Keep the complete installed folder and license. Identical reinstall is idempotent; conflicts are refused unless you deliberately choose `--replace`, which retains a dated backup. Remove only that folder to uninstall. No native runtime, server, provider, or service is required to read and apply the method.
 

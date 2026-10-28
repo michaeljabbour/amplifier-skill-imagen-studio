@@ -19,7 +19,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 E = html.escape
 
 
@@ -142,6 +142,129 @@ def markdown(text):
     return "\n".join(out)
 
 
+def render_marketing(
+    data,
+    *,
+    download,
+    install,
+    install_note,
+    doc_links,
+    method,
+    modes,
+    example_ui,
+    boundaries,
+    checks,
+    evidence,
+    exports,
+):
+    """Render a product explanation from source-bound copy, without model calls."""
+    m = data.get("marketing", {})
+    name = E(data["display_name"])
+    repo = safe_url(data.get("repository_url", ""))
+    source_link = '<a href="' + E(repo, quote=True) + '">Source on GitHub</a>' if repo else ""
+    headline = E(m.get("headline", data["promise"]))
+    lead = E(m.get("lead", data.get("audience", "")))
+    benefits = "".join(
+        "<article><h3>" + E(x["title"]) + "</h3><p>" + E(x["body"]) + "</p></article>"
+        for x in m.get("benefits", [])
+    )
+    use_when = "".join(
+        "<li>" + E(x) + "</li>" for x in m.get("use_when", [data.get("trigger", "")]) if x
+    )
+    not_for = "".join("<li>" + E(x) + "</li>" for x in m.get("not_for", []))
+    steps = m.get("walkthrough", [])
+    step_buttons = "".join(
+        '<button type="button" class="walk-step" aria-expanded="'
+        + ("true" if i == 0 else "false")
+        + '" aria-controls="walk-detail-'
+        + str(i)
+        + '"><span>'
+        + str(i + 1)
+        + "</span>"
+        + E(x["title"])
+        + "</button>"
+        for i, x in enumerate(steps)
+    )
+    step_panels = "".join(
+        '<div id="walk-detail-'
+        + str(i)
+        + '" class="walk-detail"'
+        + (" hidden" if i else "")
+        + "><h3>"
+        + E(x["title"])
+        + "</h3><p>"
+        + E(x["detail"])
+        + "</p></div>"
+        for i, x in enumerate(steps)
+    )
+    walkthrough = (
+        '<div class="walkthrough"><div class="walk-controls" role="group" aria-label="Explore the workflow">'
+        + step_buttons
+        + '</div><div class="walk-panels">'
+        + step_panels
+        + "</div></div>"
+        if steps
+        else ""
+    )
+    prompt_note = (
+        "Use after installing in a host that loads skill folders. Supply your own task files and review the result."
+        if data.get("skill_path")
+        else "Use after installing the documented native package. Read its help, supply an explicit task and inspect the result."
+    )
+    prompt = m.get("quickstart_prompt", "")
+    prompt_box = (
+        '<div class="prompt-box"><div class="box-heading"><h3>Try this with your agent</h3><button type="button" class="copy-button" data-copy="starter-prompt">Copy prompt</button></div><pre id="starter-prompt"><code>'
+        + E(prompt)
+        + '</code></pre><p class="note">'
+        + E(prompt_note)
+        + "</p></div>"
+        if prompt
+        else ""
+    )
+    preview = (
+        '<figure class="artifact"><figcaption><span>What you get</span><span>Fictional illustration</span></figcaption><pre>'
+        + E(m.get("output_preview", data["promise"]))
+        + "</pre><p>"
+        + E(
+            m.get(
+                "example_note",
+                "An authored illustration of the output, not a measured user result.",
+            )
+        )
+        + "</p></figure>"
+    )
+    if repo and repo.startswith("https://github.com/"):
+        repo_name = urlsplit(repo).path.rstrip("/").split("/")[-1]
+        clone = "git clone " + repo.rstrip("/") + ".git\ncd " + repo_name
+        install = (
+            '<h3>Start from the public source</h3><div class="code-box"><button type="button" class="copy-button" data-copy="clone-commands">Copy</button><pre id="clone-commands"><code>'
+            + E(clone)
+            + "</code></pre></div>"
+            + install
+        )
+    install_notes = "".join("<li>" + E(x) + "</li>" for x in m.get("install_notes", []))
+    portable_intro = (
+        "<p>The download contains the complete skill folder. Extract it into the skills directory supported by your agent, keeping its references and license together. Or use the source installer below. Python 3.11+ is required for that installer.</p>"
+        if data.get("skill_path")
+        else "<p>This is a native tool or library. Install its package in an isolated environment, then use the documented command or protocol.</p>"
+    )
+    benefits_section = (
+        '<section class="benefits" aria-label="What this helps you do">' + benefits + "</section>"
+        if benefits
+        else ""
+    )
+    return f'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f6f4ee"><meta name="description" content="{E(data["promise"], quote=True)}"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>{name} | Amplifier</title><link rel="stylesheet" href="style.css"><script src="site.js" defer></script></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="masthead"><div class="wrap masthead-inner"><a class="brand" href="#main"><span class="brand-mark" aria-hidden="true"></span><span>Amplifier<small>Skills and tools for thoughtful work</small></span></a><nav aria-label="Main navigation"><a href="#try">Explore</a><a href="#method">How it works</a><a href="#install">Install</a><a href="#evidence">Evidence</a></nav></div></header>
+<main id="main" class="wrap"><section class="hero"><div class="hero-copy"><p class="kind">{E(data["kind"].replace("-", " ").capitalize())}</p><h1>{name}</h1><p class="promise">{headline}</p><p class="lede">{lead}</p><div class="actions"><a class="button primary" href="#install">Use {name}</a><a class="text-link" href="#try">Walk through an example</a></div></div>{preview}</section>
+{benefits_section}
+<section id="try" class="section"><div class="section-heading"><h2>See the work take shape.</h2><p>{E(m.get("example_note", "These examples are fictional. They illustrate the intended workflow and its limits."))}</p></div>{walkthrough}<div class="worked-example">{example_ui}</div></section>
+<section id="method" class="section"><div class="section-heading"><h2>A clear job.<br>A useful stopping point.</h2><p>{E(data.get("trigger", ""))}</p></div><div class="fit-grid"><div><h3>Use it when</h3><ul>{use_when}</ul></div><div><h3>Choose another route when</h3><ul>{not_for}</ul></div></div><div class="mode-grid">{modes}</div><details class="method-details"><summary>Read the canonical method</summary><div class="method">{method}</div></details><details><summary>Limits and prerequisites</summary><ul>{boundaries}</ul></details></section>
+<section id="install" class="section"><div class="section-heading"><h2>Your first useful run.</h2><p>{E(m.get("next_step", "Install the capability, bring one real task and inspect the result before relying on it."))}</p></div><div class="install-grid"><div>{portable_intro}<div class="actions">{download}{source_link}</div>{install}<p class="note">{install_note}</p><ul class="install-notes">{install_notes}</ul></div><div>{prompt_box}<div class="reading"><h3>Keep the guide nearby</h3><p>{doc_links}</p></div></div></div><p class="copy-status" role="status" aria-live="polite"></p></section>
+<section id="evidence" class="section evidence"><div class="section-heading"><h2>Know what you can rely on.</h2><p>{E(m.get("proof_summary", html.unescape(evidence)))}</p></div><details><summary>Read the checks and their scope</summary><ul class="checks">{checks}</ul><p>{evidence}</p></details><p class="note">Fictional examples explain the capability. Tests check the stated behavior. Outside-user outcomes need their own evidence.</p></section></main>
+<footer><div class="wrap footer-grid"><div><strong>{name}</strong><p>One capability. Its method, source and limits in reach.</p></div><div>{source_link}<p>{doc_links}</p></div></div><div class="wrap attribution">The family theme is MIT licensed. No institutional affiliation or endorsement is implied.</div></footer></body></html>'''
+
+
 def build(data):
     output = ROOT / "_site"
     if output.exists():
@@ -251,7 +374,10 @@ def build(data):
         method = markdown(source)
     else:
         method = markdown(
-            data.get("method_summary", "Use the native tool and its documented command interface.")
+            data.get(
+                "method_summary",
+                "Use the native tool and its documented command interface.",
+            )
         )
     commands = data.get("install_commands", [])
     if len(commands) > 3:
@@ -262,7 +388,7 @@ def build(data):
         else "<p>Read the native installation guide linked below.</p>"
     )
     native = data.get("runtime_install_commands", [])
-    if native:
+    if native and (folder or native != commands):
         install += (
             "<details><summary>Native tools and optional execution</summary><pre><code>"
             + E("\n".join(native))
@@ -294,53 +420,19 @@ def build(data):
         for name in exports
     )
     boundaries = "".join("<li>" + E(str(x)) + "</li>" for x in data.get("boundaries", []))
-    status = E(
-        data.get(
-            "publication_status",
-            "Local release candidate. Publication and real-user acceptance are separate.",
-        )
-    )
-    page = (
-        """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>"""
-        + E(data["display_name"])
-        + ''' | Amplifier</title><meta name="description" content="'''
-        + E(data["promise"], quote=True)
-        + """"><link rel="stylesheet" href="style.css"><script src="site.js" defer></script></head><body><a class="skip" href="#main">Skip to content</a><header><a href="#main" class="brand">Amplifier<span>Skills and tools for thoughtful work</span></a><nav aria-label="Main navigation"><a href="#try">See it work</a><a href="#method">Method</a><a href="#install">Install</a><a href="#evidence">Evidence</a></nav></header><main id="main"><section class="hero"><div><p class="eyebrow">"""
-        + E(data["kind"].replace("-", " "))
-        + """</p><h1>"""
-        + E(data["display_name"])
-        + """</h1></div><div><p class="promise">"""
-        + E(data["promise"])
-        + """</p><p>"""
-        + E(str(data.get("audience", "")))
-        + """</p><p>"""
-        + E(str(data.get("trigger", "")))
-        + """</p><a class="button" href="#install">Start here</a><p class="muted">"""
-        + status
-        + """</p></div></section><section id="try"><p class="eyebrow">One brief, visible choices</p><h2>See the difference.</h2>"""
-        + example_ui
-        + """<p class="muted">Authored illustrations show the intended method. They are not measured results.</p></section><section id="method"><p class="eyebrow">One coherent job</p><h2>Keep the useful judgment.</h2><div class="mode-grid">"""
-        + modes
-        + """</div><details><summary>Read the canonical method</summary><div class="method">"""
-        + method
-        + """</div></details><ul>"""
-        + boundaries
-        + """</ul></section><section id="install"><p class="eyebrow">Choose the surface you need</p><h2>Make it yours.</h2>"""
-        + download
-        + install
-        + "<p>"
-        + install_note
-        + "</p><p>"
-        + doc_links
-        + """</p></section><section id="evidence"><p class="eyebrow">Proof before a claim</p><h2>What has been checked?</h2><p>"""
-        + evidence
-        + """</p><ul class="checks">"""
-        + checks
-        + """</ul><p>Real-user outcomes remain unmeasured unless a dated record explicitly establishes them.</p></section></main><footer><strong>"""
-        + E(data["display_name"])
-        + """</strong><p>"""
-        + doc_links
-        + """</p><p>MIT theme attribution retained. No institutional affiliation or endorsement implied.</p></footer></body></html>"""
+    page = render_marketing(
+        data,
+        download=download,
+        install=install,
+        install_note=install_note,
+        doc_links=doc_links,
+        method=method,
+        modes=modes,
+        example_ui=example_ui,
+        boundaries=boundaries,
+        checks=checks,
+        evidence=evidence,
+        exports=exports,
     )
     (output / "index.html").write_text(page)
     receipt = {
@@ -353,7 +445,13 @@ def build(data):
     }
     (output / "build-record.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(
-        json.dumps({"built": str(output), "portable_files": len(files), "examples": len(examples)})
+        json.dumps(
+            {
+                "built": str(output),
+                "portable_files": len(files),
+                "examples": len(examples),
+            }
+        )
     )
 
 
