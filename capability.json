@@ -212,5 +212,12 @@
       "Keep the complete installed folder, references and license together. Identical reinstall is safe; conflicts are refused. A deliberate --replace keeps a dated backup."
     ]
   },
-  "repository_url": "https://github.com/michaeljabbour/amplifier-skill-imagen-studio"
+  "repository_url": "https://github.com/michaeljabbour/amplifier-skill-imagen-studio",
+  "film": {
+    "file": "imagen-studio-film",
+    "seconds": 64,
+    "heading": "Everyone loved the cup.",
+    "blurb": "In 64 seconds, an approved image vanishes the moment someone asks for a little brighter. Imagen Studio starts from the brief, lets you pick from real drafts, changes only the image you picked and ships it with its size, alt text and history. When it cannot see the pixels, it says so. Captions are on the player; a transcript is below.",
+    "note": "The cup, the drafts and the file are a fictional example. The film shows how the skill behaves; it does not report results."
+  }
 }

@@ -2,6 +2,8 @@
 
 Take the image from brief to chosen file.
 
+Watch the [64-second film](https://michaeljabbour.github.io/amplifier-skill-imagen-studio/#film): an approved image, one request for a little brighter, and how the skill changes the image you chose instead of making a new one. The example in it is fictional.
+
 A creative production skill for images and ASCII art. Clarify the brief, review concrete drafts and refine the file you actually chose, with the checks and delivery details needed to use it.
 
 [Explore the site](https://michaeljabbour.github.io/amplifier-skill-imagen-studio/) · [Read the method](skills/imagen-studio/SKILL.md) · [Install guide](docs/INSTALL.md)
