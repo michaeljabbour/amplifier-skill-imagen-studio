@@ -1,5 +1,24 @@
 # Handoff
 
+Last updated: 2026-10-30 — CI formatting recovery.
+
+The CI Python matrix stopped on formatting in `scripts/capability.py` before
+running later gates. The film renderer now uses the configured formatter's
+layout and a named local helper instead of an assigned lambda. The development
+formatter is pinned to the CI-observed Ruff 0.17.3; adapter runtime and policy
+sources are unchanged.
+
+Local Python 3.12 checks pass: full configured format/lint, bundle validation,
+3 deterministic policy tests plus replay of the existing 5-case/5-mutation
+record, 36 adapter tests (1 explicit external-contract skip) at 85.33% coverage,
+3 local workflow/ASCII tests, isolated wheel build/install smoke, and static
+site build/check/JavaScript syntax. Declared dependencies and the extra ASCII
+test dependency were installed only from the existing cache in task-owned
+environments. No provider call or new behavioral result was produced.
+
+Next: publish the exact tested commit and verify the remote Python matrix.
+Existing result records, media and portable method bytes remain unchanged.
+
 Last updated: 2026-10-28 — public marketing refinement.
 
 The current task adds a clearer customer introduction, fictional artifact preview, first-use prompt and complete public clone/install instructions. Shared static UI retains canonical method/package bytes and native execution boundaries. See README, capability.json and docs/INSTALL.md. No provider call, real-user store, enrollment or live experiment is part of this change.

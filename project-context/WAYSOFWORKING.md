@@ -59,3 +59,11 @@ and exact pixels; compare format and mode with the result metadata and suffix.
 Treat non-retryable 4xx responses as final, correct the request deliberately,
 and do not spend quota repeating a successful provider call when a discovered
 defect is entirely in deterministic local persistence or transformation code.
+
+## CI formatter recovery
+
+The adapter development extra pins Ruff 0.17.3. Use that declared version for
+both formatting and linting of the adapter, root scripts and evaluations;
+formatting alone does not catch lint rules such as an assigned lambda.
+Run both checks before publication. A formatting-only film-renderer change
+must preserve the built media, method downloads and policy result records.

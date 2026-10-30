@@ -150,17 +150,33 @@ def render_film(data):
     if not f or not folder.is_dir():
         return "", "", ""
     stem = f["file"]
-    have = lambda suffix: (folder / (stem + suffix)).exists()
+
+    def have(suffix):
+        return (folder / (stem + suffix)).exists()
+
     base = "film/" + stem
     poster = next((base + s for s in ("-poster.jpg", "-poster.png") if have(s)), "")
-    sources = ('<source src="' + base + '.webm" type="video/webm">' if have(".webm") else "") + '<source src="' + base + '.mp4" type="video/mp4">'
-    track = '<track kind="captions" src="' + base + '.vtt" srclang="en" label="English" default>' if have(".vtt") else ""
+    sources = (
+        ('<source src="' + base + '.webm" type="video/webm">' if have(".webm") else "")
+        + '<source src="'
+        + base
+        + '.mp4" type="video/mp4">'
+    )
+    track = (
+        '<track kind="captions" src="' + base + '.vtt" srclang="en" label="English" default>'
+        if have(".vtt")
+        else ""
+    )
     links = ['<a href="' + base + '.mp4" download>Download the film</a>']
     if have("-15s.mp4"):
         links.append('<a href="' + base + '-15s.mp4" download>15-second cut</a>')
     if have(".vtt"):
         links.append('<a href="' + base + '.vtt" download>Captions</a>')
-    lines = [x.strip() for x in (folder / (stem + ".txt")).read_text().splitlines() if x.strip()] if have(".txt") else []
+    lines = (
+        [x.strip() for x in (folder / (stem + ".txt")).read_text().splitlines() if x.strip()]
+        if have(".txt")
+        else []
+    )
     transcript = (
         '<details class="film-transcript"><summary id="film-transcript-summary">Read the transcript</summary>'
         + "".join("<p>" + E(x) + "</p>" for x in lines)
@@ -179,7 +195,9 @@ def render_film(data):
         + ">"
         + sources
         + track
-        + '<a href="' + base + '.mp4">Download the film (MP4)</a></video><figcaption>'
+        + '<a href="'
+        + base
+        + '.mp4">Download the film (MP4)</a></video><figcaption>'
         + ' <span aria-hidden="true">&middot;</span> '.join(links)
         + "</figcaption></figure>"
         + transcript
@@ -187,7 +205,9 @@ def render_film(data):
         + "</section>"
     )
     nav = '<a href="#film">Film</a>'
-    action = '<a class="text-link" href="#film">Watch the ' + str(int(f["seconds"])) + "-second film</a>"
+    action = (
+        '<a class="text-link" href="#film">Watch the ' + str(int(f["seconds"])) + "-second film</a>"
+    )
     return section, nav, action
 
 
