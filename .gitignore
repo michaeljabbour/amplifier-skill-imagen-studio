@@ -39,3 +39,4 @@ _site/
 .capability-check/
 .venv-capability/
 __pycache__/
+.research/
